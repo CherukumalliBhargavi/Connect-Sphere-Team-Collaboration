@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#6654e8">
+  <title>ConnectSphere | Team Collaboration</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/script.js" defer></script>
+</head>
+<body>
+  <div id="toast" class="toast" role="status"></div>
+
+  <section id="authScreen" class="auth-screen">
+    <div class="auth-art">
+      <div class="art-logo">✦ ConnectSphere</div>
+      <div class="art-content">
+        <span class="eyebrow">YOUR TEAM. ONE SPACE.</span>
+        <h1>Great ideas happen when we connect.</h1>
+        <p>Meet, share, brainstorm and bring your team's best ideas to life.</p>
+        <div class="art-orbs">
+          <span>✦</span><span>◉</span><span>✧</span><span>●</span>
+        </div>
+        <div class="art-caption">Video calls · Team chat · Shared whiteboard</div>
+      </div>
+      <div class="art-bottom">A brighter way to work together.</div>
+    </div>
+
+    <div class="auth-form-side">
+      <div class="auth-mobile-logo">✦ ConnectSphere</div>
+      <div class="auth-card">
+        <span class="eyebrow">WELCOME TO YOUR WORKSPACE</span>
+        <h2 id="authTitle">Welcome back!</h2>
+        <p id="authSubtitle">Sign in to continue to your workspace.</p>
+
+        <div class="auth-switch">
+          <button id="loginTab" class="auth-tab active" type="button">Sign in</button>
+          <button id="registerTab" class="auth-tab" type="button">Create account</button>
+        </div>
+
+        <form id="authForm">
+          <label id="nameLabel" class="hidden" for="authName">Full name</label>
+          <input id="authName" class="hidden" type="text"
+                 placeholder="Enter your name" autocomplete="name">
+
+          <label for="authEmail">Email address</label>
+          <input id="authEmail" type="email" placeholder="you@example.com"
+                 autocomplete="email" required>
+
+          <label for="authPassword">Password</label>
+          <input id="authPassword" type="password" placeholder="At least 8 characters"
+                 minlength="8" autocomplete="current-password" required>
+
+          <p id="authError" class="form-error" aria-live="polite"></p>
+          <button class="btn btn-primary full-width" id="authSubmit" type="submit">
+            Sign in →
+          </button>
+        </form>
+        <p class="auth-footnote">Use your account to access your team workspace.</p>
+      </div>
+    </div>
+  </section>
+
+  <div id="appShell" class="app-shell hidden">
+    <aside class="sidebar">
+      <a href="#" class="brand" data-view="dashboard">
+        <span class="brand-mark">✦</span> ConnectSphere
+      </a>
+
+      <div class="workspace-label">WORKSPACE</div>
+      <nav class="navigation">
+        <button class="nav-link active" data-view="dashboard"><span>⌂</span> Dashboard</button>
+        <button class="nav-link" data-view="meeting"><span>▣</span> Meeting room</button>
+        <button class="nav-link" data-view="chat"><span>◌</span> Team chat <span class="nav-count">LIVE</span></button>
+        <button class="nav-link" data-view="whiteboard"><span>✎</span> Whiteboard</button>
+        <button class="nav-link" data-view="files"><span>▤</span> Shared files</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-help">
+          <div class="help-icon">✧</div>
+          <strong>Make something great</strong>
+          <p>Bring your ideas together in one place.</p>
+          <button class="btn btn-light full-width" data-view="meeting">Start collaborating</button>
+        </div>
+        <div class="profile-row">
+          <div id="userAvatar" class="avatar">U</div>
+          <div class="profile-info">
+            <strong id="userName">Your account</strong>
+            <span id="userEmail">Signed in</span>
+          </div>
+          <button id="logoutBtn" class="icon-btn" title="Sign out" aria-label="Sign out">↗</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div>
+          <div class="breadcrumb">Workspace <span>/</span> <strong id="pageName">Dashboard</strong></div>
+          <p class="topbar-date">Your ideas, your people, your space.</p>
+        </div>
+        <div class="topbar-actions">
+          <button id="themeBtn" class="icon-btn theme-btn" title="Toggle theme">☾</button>
+          <button id="tipsBtn" class="icon-btn" title="Workspace tip">ⓘ</button>
+          <button id="headerStartBtn" class="btn btn-primary">＋ New meeting</button>
+        </div>
+      </header>
+
+      <section id="dashboardView" class="view">
+        <div class="hero">
+          <div class="hero-copy">
+            <span class="hero-label">✦ YOUR COLLABORATION HUB</span>
+            <h1>Ideas are better<br>when <span>shared.</span></h1>
+            <p>Bring your team together, wherever great work happens.</p>
+            <div class="hero-actions">
+              <button class="btn btn-white" data-view="meeting">▶ Start a meeting</button>
+              <button class="btn btn-glass" id="heroJoinBtn">Join a room ↗</button>
+            </div>
+          </div>
+          <div class="hero-art">
+            <div class="hero-ring ring-one"></div>
+            <div class="hero-ring ring-two"></div>
+            <div class="hero-center">✦</div>
+            <div class="floating-card float-one"><span>●</span> Team connected</div>
+            <div class="floating-card float-two">✧ &nbsp; Ideas in motion</div>
+            <div class="floating-card float-three">↗ &nbsp; Create together</div>
+          </div>
+          <div class="hero-decoration">✳</div>
+        </div>
+
+        <div class="section-heading">
+          <div><span class="eyebrow">YOUR TOOLKIT</span><h2>Everything in one place</h2></div>
+          <p>Built for better teamwork.</p>
+        </div>
+
+        <div class="feature-grid">
+          <button class="feature-card feature-purple" data-view="meeting">
+            <span class="feature-icon">▣</span><span class="feature-arrow">↗</span>
+            <h3>Video meetings</h3><p>Meet face-to-face and collaborate in real time.</p>
+            <span class="feature-link">Open meeting room →</span>
+          </button>
+          <button class="feature-card feature-blue" data-view="chat">
+            <span class="feature-icon">◌</span><span class="feature-arrow">↗</span>
+            <h3>Team chat</h3><p>Keep conversations and ideas flowing.</p>
+            <span class="feature-link">Open team chat →</span>
+          </button>
+          <button class="feature-card feature-orange" data-view="whiteboard">
+            <span class="feature-icon">✎</span><span class="feature-arrow">↗</span>
+            <h3>Live whiteboard</h3><p>Sketch, brainstorm and map out your ideas.</p>
+            <span class="feature-link">Open whiteboard →</span>
+          </button>
+          <button class="feature-card feature-green" data-view="files">
+            <span class="feature-icon">▤</span><span class="feature-arrow">↗</span>
+            <h3>File sharing</h3><p>Choose and share files with your team.</p>
+            <span class="feature-link">View shared files →</span>
+          </button>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="panel notes-panel">
+            <div class="panel-heading"><div><span class="eyebrow">PERSONAL SPACE</span><h3>Quick notes</h3></div><span class="panel-emoji">✎</span></div>
+            <p>Capture your next great idea before it slips away.</p>
+            <textarea id="quickNotes" rows="5" placeholder="Write your ideas, agenda or reminders…"></textarea>
+            <div class="panel-footer"><span id="notesStatus">Saved on this device</span><button id="clearNotes" class="btn btn-soft">Clear</button></div>
+          </section>
+
+          <section class="panel checklist-panel">
+            <div class="panel-heading"><div><span class="eyebrow">MEETING PREP</span><h3>Team checklist</h3></div><span class="panel-emoji green-emoji">✓</span></div>
+            <div class="check-list">
+              <label><input type="checkbox" data-check="agenda"> Prepare the agenda</label>
+              <label><input type="checkbox" data-check="invite"> Invite teammates</label>
+              <label><input type="checkbox" data-check="notes"> Capture action items</label>
+              <label><input type="checkbox" data-check="followup"> Send a follow-up</label>
+            </div>
+            <div class="progress-info"><span id="checkText">0 of 4 completed</span><strong id="checkPercent">0%</strong></div>
+            <div class="progress-track"><div id="checkBar"></div></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="meetingView" class="view hidden">
+        <div class="page-intro"><span class="eyebrow">CONNECT IN REAL TIME</span><h1>Your meeting room</h1><p>Start a new room or join teammates using a room code.</p></div>
+        <section class="panel room-join-panel">
+          <div class="room-actions">
+            <div><span class="mini-icon purple-bg">▣</span><h3>Create a new meeting</h3><p>Start a room and invite your team.</p></div>
+            <button id="createRoomBtn" class="btn btn-primary">＋ Create room</button>
+          </div>
+          <div class="join-divider"><span>OR JOIN AN EXISTING ROOM</span></div>
+          <form id="joinForm" class="join-form">
+            <input id="roomCodeInput" placeholder="Enter meeting room code" autocomplete="off" required>
+            <button class="btn btn-dark" type="submit">Join meeting ↗</button>
+          </form>
+        </section>
+
+        <section class="meeting-layout">
+          <div class="panel video-panel">
+            <div class="panel-heading"><div><span class="eyebrow">LIVE SESSION</span><h3 id="meetingTitle">Meeting preview</h3></div><span id="meetingStatus" class="status-pill">Not connected</span></div>
+            <div id="videoGrid" class="video-grid">
+              <div class="video-placeholder"><span class="placeholder-icon">▣</span><strong>Your meeting starts here</strong><p>Create or join a room to connect.</p></div>
+            </div>
+            <div class="call-controls">
+              <button id="micBtn" class="call-btn" title="Toggle microphone">🎙 <span>Mic</span></button>
+              <button id="cameraBtn" class="call-btn" title="Toggle camera">▣ <span>Camera</span></button>
+              <button id="screenBtn" class="call-btn" title="Share your screen">▧ <span>Share screen</span></button>
+              <button id="leaveBtn" class="call-btn danger-btn" title="Leave meeting">↗ <span>Leave</span></button>
+            </div>
+          </div>
+          <aside class="panel meeting-side">
+            <span class="eyebrow">ROOM DETAILS</span><h3>Invite your team</h3>
+            <p>Share this room code with people you want to meet.</p>
+            <div class="room-code-box"><strong id="currentRoomCode">No room yet</strong><button id="copyRoomBtn" class="icon-btn" title="Copy room code">▣</button></div>
+            <div class="meeting-clock"><span>MEETING DURATION</span><strong id="meetingTimer">00:00</strong></div>
+            <div class="participant-title">Participants <span id="participantCount">0</span></div>
+            <div id="participantList" class="participant-list"><p class="muted">Participants appear here when connected.</p></div>
+          </aside>
+        </section>
+      </section>
+
+      <section id="chatView" class="view hidden">
+        <div class="page-intro"><span class="eyebrow">KEEP THE CONVERSATION GOING</span><h1>Team chat</h1><p>Choose a room to chat with its participants in real time.</p></div>
+        <div class="panel chat-panel">
+          <div class="chat-heading"><div class="chat-avatar">◌</div><div><h3>Workspace conversation</h3><p id="chatRoomLabel">Join a meeting room to begin</p></div><span class="online-indicator">● Connected locally</span></div>
+          <div id="chatMessages" class="chat-messages"><div class="empty-state"><span>💬</span><h3>Your conversation starts here</h3><p>Join the same room as a teammate to exchange messages.</p></div></div>
+          <form id="chatForm" class="chat-form"><input id="chatInput" placeholder="Write a message…" maxlength="2000" autocomplete="off" required><button class="btn btn-primary" type="submit">Send ↗</button></form>
+          <p class="chat-note">Messages are shared with participants in your current room.</p>
+        </div>
+      </section>
+
+      <section id="whiteboardView" class="view hidden">
+        <div class="page-intro"><span class="eyebrow">THINK OUT LOUD</span><h1>Collaborative whiteboard</h1><p>Sketch your thoughts, draw a flow, or plan your next big idea.</p></div>
+        <section class="panel board-panel">
+          <div class="board-toolbar">
+            <label class="tool-label">Pen color <input id="penColor" type="color" value="#6b55e8"></label>
+            <label class="tool-label">Size <input id="penSize" type="range" min="1" max="18" value="4"></label>
+            <button id="eraserBtn" class="btn btn-soft">⌫ Eraser</button>
+            <button id="clearBoardBtn" class="btn btn-soft">Clear board</button>
+            <button id="saveBoardBtn" class="btn btn-primary">Download PNG ↓</button>
+          </div>
+          <canvas id="whiteboard" aria-label="Drawing whiteboard"></canvas>
+          <div class="board-footer"><span>✦ Your canvas is ready for ideas.</span><span id="boardStatus">Draw with your mouse or finger</span></div>
+        </section>
+      </section>
+
+      <section id="filesView" class="view hidden">
+        <div class="page-intro"><span class="eyebrow">EVERYTHING WITH YOUR TEAM</span><h1>Shared files</h1><p>Select files to preview them locally or share them with your meeting room.</p></div>
+        <section class="panel files-panel">
+          <label class="upload-zone" for="filePicker"><span class="upload-icon">↑</span><strong>Choose files to share</strong><span>Click to browse your device</span><input id="filePicker" type="file" multiple hidden><span class="btn btn-primary">Browse files</span></label>
+          <div class="files-heading"><h3>Your selected files</h3><span id="fileCount">0 files</span></div>
+          <div id="fileList" class="file-list"><div class="empty-state"><span>📁</span><h3>No files selected yet</h3><p>Choose files above to add them to this session.</p></div></div>
+          <p class="chat-note">Selecting files does not upload them to a server. Use the meeting chat's file-sharing event for remote sharing.</p>
+        </section>
+      </section>
+
+      <footer class="app-footer"><span>✦ ConnectSphere</span><span>Connect better. Create together.</span><span>Made for collaboration ♡</span></footer>
+    </main>
+  </div>
+</body>
+</html>
